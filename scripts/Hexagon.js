@@ -6,10 +6,12 @@ export default class Hexagon {
     constructor(center, size) {
         this.center = center;
         this.size = size;
+        this.pointyTopped = true;
 
         let graphics = new PIXI.Graphics();
 
         graphics.beginFill(0xa69c79, 1);
+        graphics.lineStyle(2, 0xe6dcc9, 1);
         graphics.drawPolygon(this.getCoordsForHex());
         graphics.endFill();
 
