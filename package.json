@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "bootstrap-sass": "^3.3.6",
+    "jquery": "^2.2.2",
     "lodash": "^4.7.0",
     "pixi.js": "^3.0.10"
   },
