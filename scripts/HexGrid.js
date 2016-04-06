@@ -1,33 +1,29 @@
 'use strict';
 
 import PIXI from 'pixi.js';
-import Hexagon from './Hexagon';
-import Cube from './Coordinates/Cube';
+import HexagonGraphic from './HexagonGraphic';
+import Grid from './Coordinates/Grid';
+import {LAYOUT_POINTY, LAYOUT_FLAT} from './Coordinates/Orientation';
+import Layout from './Coordinates/Layout';
 
 class HexGrid {
     constructor() {
+        let screenCenter = new PIXI.Point(window.innerWidth / 2, window.innerHeight / 2);
+        this.layout = new Layout(LAYOUT_POINTY, new PIXI.Point(30, 30), screenCenter);
         this.uid = performance.now();
         this.displayObject = this.drawGrid();
     }
 
     drawGrid() {
-        let startPoint = new PIXI.Point(size, size);
-        let size = 50;
-        let width = size * Math.sqrt(3) / 2;
+        let size = this.layout.size;
+        let width = size.x * Math.sqrt(3) / 2;
         let horiz = width;
-        let height = size * 2;
+        let height = size.y * 2;
         let vert = height * (3 / 4);
 
-        let directions = [
-            new Cube(+1, -1,  0), new Cube(+1,  0, -1), new Cube(0, +1, -1),
-            new Cube(-1, +1,  0), new Cube(-1,  0, +1), new Cube(0, -1, +1)
-        ].map(c => c.toAxial());
-
-        console.log(directions);
-
         // mask
-        let borderSize = 10;
-        let padding = 30;
+        let borderSize = 6;
+        let padding = 20;
         let mask = new PIXI.Graphics();
         mask.beginFill();
         mask.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
@@ -36,23 +32,21 @@ class HexGrid {
         // border
         let border = new PIXI.Graphics();
         border.beginFill(0xff00ff, 0);
-        border.lineStyle(borderSize, 0x000000, 0.25);
+        border.lineStyle(borderSize, 0x3d3a31, 1);
         border.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
         border.endFill();
 
         // grid
-        let grid = new PIXI.Container();
-        for (let i = 0; i < 20; i++) {
-            let center = new PIXI.Point(
-                startPoint.x + (i * horiz),
-                startPoint.y + (i * vert)
-            );
-            let hex = new Hexagon(center, size)
-            grid.addChild(hex);
+        let hexGridContainer = new PIXI.Container();
+        let grid = new Grid(mask.getBounds(), size);
+        for (let coord of grid.coords) {
+            let point = coord.toPixel(this.layout);
+            let hex = new HexagonGraphic(point, this.layout)
+            hexGridContainer.addChild(hex);
         }
 
         let container = new PIXI.Container();
-        container.addChild(grid);
+        container.addChild(hexGridContainer);
         container.addChild(border);
         container.mask = mask;
 

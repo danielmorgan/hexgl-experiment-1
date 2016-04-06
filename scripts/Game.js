@@ -36,9 +36,7 @@ export default class Game {
 
     addEntity(entity) {
         this.entities.push(entity);
-        console.log(entity.getDisplayObject());
         this.stage.addChild(entity.getDisplayObject());
-        console.log('addEntity', entity.constructor.name, entity.uid);
     }
 
     update() {
