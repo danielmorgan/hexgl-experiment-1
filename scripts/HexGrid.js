@@ -25,16 +25,24 @@ class HexGrid {
 
         console.log(directions);
 
-        let grid = new PIXI.Container();
-        let background = new PIXI.Graphics();
-        background.lineStyle(2, 0xff0000, 1);
-        background.drawPolygon([0, 0,
-            window.innerWidth, 0,
-            window.innerWidth, window.innerHeight,
-            0, window.innerHeight]);
-        grid.addChild(background);
+        // mask
+        let borderSize = 10;
+        let padding = 30;
+        let mask = new PIXI.Graphics();
+        mask.beginFill();
+        mask.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
+        mask.endFill();
 
-        for (let i = 0; i < 4; i++) {
+        // border
+        let border = new PIXI.Graphics();
+        border.beginFill(0xff00ff, 0);
+        border.lineStyle(borderSize, 0x000000, 0.25);
+        border.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
+        border.endFill();
+
+        // grid
+        let grid = new PIXI.Container();
+        for (let i = 0; i < 20; i++) {
             let center = new PIXI.Point(
                 startPoint.x + (i * horiz),
                 startPoint.y + (i * vert)
@@ -43,7 +51,12 @@ class HexGrid {
             grid.addChild(hex);
         }
 
-        return grid;
+        let container = new PIXI.Container();
+        container.addChild(grid);
+        container.addChild(border);
+        container.mask = mask;
+
+        return container;
     }
 
     getDisplayObject() {
