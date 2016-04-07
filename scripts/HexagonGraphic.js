@@ -4,10 +4,8 @@ import PIXI from 'pixi.js';
 
 export default class HexagonGraphic {
     constructor(center, layout) {
-        console.log(center, layout);
         this.center = center;
         this.layout = layout;
-        this.pointyTopped = true;
 
         let hexagon = new PIXI.Graphics();
 

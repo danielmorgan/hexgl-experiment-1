@@ -9,7 +9,7 @@ import Layout from './Coordinates/Layout';
 class HexGrid {
     constructor() {
         let screenCenter = new PIXI.Point(window.innerWidth / 2, window.innerHeight / 2);
-        this.layout = new Layout(LAYOUT_POINTY, new PIXI.Point(30, 30), screenCenter);
+        this.layout = new Layout(LAYOUT_POINTY, new PIXI.Point(50, 50), screenCenter);
         this.uid = performance.now();
         this.displayObject = this.drawGrid();
     }
@@ -40,6 +40,7 @@ class HexGrid {
         let hexGridContainer = new PIXI.Container();
         let grid = new Grid(mask.getBounds(), size);
         for (let coord of grid.coords) {
+            console.log(coord.toPixel(this.layout));
             let point = coord.toPixel(this.layout);
             let hex = new HexagonGraphic(point, this.layout)
             hexGridContainer.addChild(hex);
