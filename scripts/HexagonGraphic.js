@@ -31,8 +31,8 @@ export default class HexagonGraphic {
     cornerPoint(center, i) {
         let angleDeg = 60 * i + this.layout.orientation.startAngle;
         let angleRad = Math.PI / 180 * angleDeg;
-        let x = center.x + this.layout.size.x * Math.cos(angleRad);
-        let y = center.y + this.layout.size.y * Math.sin(angleRad);
+        let x = center.x + this.layout.size.w * Math.cos(angleRad);
+        let y = center.y + this.layout.size.h * Math.sin(angleRad);
 
         return new PIXI.Point(x, y);
     }

@@ -2,7 +2,6 @@
 
 class Orientation {
     constructor(f0, f1, f2, f3, b0, b1, b2, b3, startAngle) {
-        console.log(f0, f1, f2, f3, b0, b1, b2, b3, startAngle);
         this.f0 = f0;
         this.f1 = f1;
         this.f2 = f2;
