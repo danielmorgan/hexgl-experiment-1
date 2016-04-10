@@ -3,22 +3,22 @@
 import PIXI from 'pixi.js';
 import HexagonGraphic from './HexagonGraphic';
 import Grid from './Coordinates/Grid';
-import {LAYOUT_POINTY, LAYOUT_FLAT} from './Coordinates/Orientation';
+import { LAYOUT_POINTY, LAYOUT_FLAT } from './Coordinates/Orientation';
 import Layout from './Coordinates/Layout';
 
 class HexGrid {
     constructor() {
         let screenCenter = new PIXI.Point(window.innerWidth / 2, window.innerHeight / 2);
-        this.layout = new Layout(LAYOUT_POINTY, new PIXI.Point(50, 50), screenCenter);
+        this.layout = new Layout(LAYOUT_POINTY, { w: 50, h: 50 }, screenCenter);
         this.uid = performance.now();
         this.displayObject = this.drawGrid();
     }
 
     drawGrid() {
         let size = this.layout.size;
-        let width = size.x * Math.sqrt(3) / 2;
+        let width = size.w * Math.sqrt(3) / 2;
         let horiz = width;
-        let height = size.y * 2;
+        let height = size.h * 2;
         let vert = height * (3 / 4);
 
         // mask
@@ -39,8 +39,8 @@ class HexGrid {
         // grid
         let hexGridContainer = new PIXI.Container();
         let grid = new Grid(mask.getBounds(), size);
+        console.log(grid);
         for (let coord of grid.coords) {
-            console.log(coord.toPixel(this.layout));
             let point = coord.toPixel(this.layout);
             let hex = new HexagonGraphic(point, this.layout)
             hexGridContainer.addChild(hex);

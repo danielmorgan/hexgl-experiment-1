@@ -18,27 +18,20 @@ export default class Axial {
     }
 
     toPixel(layout) {
-        let Ox = layout.origin.x;
-        let Oy = layout.origin.y;
-        let w = layout.size.x;
+        let o = layout.orientation;
+        let w = layout.size.w;
         let h = layout.size.h;
         let q = this.q;
         let r = this.r;
 
-        let x = (w * Math.sqrt(3) * (q + r / 2)) + Ox;
-        let y = (h * 3 / 2 * q) + Oy;
+        let x = (o.f0 * q + o.f1 * r) * w;
+        let y = (o.f2 * q + o.f3 * r) * h;
 
-        // let x = (
-        //     layout.origin.x + 
-        //     (layout.orientation.f0 * this.q) + 
-        //     (layout.orientation.f1 * this.r)
-        // ) * layout.size.x;
-        // let y = (
-        //     layout.origin.x + 
-        //     (layout.orientation.f2 * this.q) + 
-        //     (layout.orientation.f3 * this.r)
-        // ) * layout.size.y;
-
-        return new PIXI.Point(x, y);
+        return new PIXI.Point(x + layout.origin.x, y + layout.origin.y);
     }
 }
+
+export const Directions = [
+    new Axial(+1, 0), new Axial(+1, -1), new Axial(0, -1),
+    new Axial(-1, 0), new Axial(-1, +1), new Axial(0, +1)
+];

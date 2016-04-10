@@ -16,4 +16,13 @@ export default class Cube {
     toAxial() {
         return new Axial(this.x, this.z);
     }
+
+    toPixel() {
+        return (this.toAxial()).toPixel();
+    }
 }
+
+export const Directions = [
+    new Cube(+1, -1,  0), new Cube(+1,  0, -1), new Cube(0, +1, -1),
+    new Cube(-1, +1,  0), new Cube(-1,  0, +1), new Cube(0, -1, +1)
+];
