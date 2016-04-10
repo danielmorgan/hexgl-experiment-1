@@ -14,7 +14,6 @@ class Orientation {
     }
 }
 
-
 let sqrt3 = Math.sqrt(3);
 export const LAYOUT_POINTY = new Orientation(
     sqrt3, sqrt3/2, 0, 3/2,
@@ -22,4 +21,5 @@ export const LAYOUT_POINTY = new Orientation(
     30);
 export const LAYOUT_FLAT = new Orientation(
     3/2, 0, sqrt3/2, sqrt3,
-    2/3, 0, -1/3, sqrt3/3);
+    2/3, 0, -1/3, sqrt3/3,
+    0);

@@ -18,7 +18,7 @@ export default class Cube {
     }
 
     toPixel() {
-        return (this.toAxial()).toPixel();
+        console.log(this.toAxial().toPixel());
     }
 }
 

@@ -32,6 +32,6 @@ export default class Axial {
 }
 
 export const Directions = [
-    new Axial(+1, 0), new Axial(+1, -1), new Axial(0, -1),
+    new Axial(+1,  0), new Axial(+1, -1), new Axial(0, -1),
     new Axial(-1, 0), new Axial(-1, +1), new Axial(0, +1)
 ];
