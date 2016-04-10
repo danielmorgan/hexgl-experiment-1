@@ -1,6 +1,7 @@
 'use strict';
 
 import PIXI from 'pixi.js';
+import $ from 'jquery';
 import HexagonGraphic from './HexagonGraphic';
 import Grid from './Coordinates/Grid';
 import Axial from './Coordinates/Axial';
@@ -11,8 +12,8 @@ class HexGrid {
     constructor() {
         let screenCenter = new PIXI.Point(window.innerWidth / 2, window.innerHeight / 2);
         this.layout = new Layout(LAYOUT_POINTY, { w: 25, h: 25 }, screenCenter);
-        this.uid = performance.now();
         this.displayObject = this.drawGrid();
+        this.bindEvents();
     }
 
     drawGrid() {
@@ -27,13 +28,6 @@ class HexGrid {
         mask.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
         mask.endFill();
 
-        // border
-        let border = new PIXI.Graphics();
-        border.beginFill(0xff00ff, 0);
-        border.lineStyle(borderSize, 0x3d3a31, 1);
-        border.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
-        border.endFill();
-
         // grid
         let hexGridContainer = new PIXI.Container();
         let grid = new Grid(mask.getBounds(), this.layout.size);
@@ -45,7 +39,6 @@ class HexGrid {
 
         let container = new PIXI.Container();
         container.addChild(hexGridContainer);
-        container.addChild(border);
         container.mask = mask;
 
         return container;
@@ -53,6 +46,28 @@ class HexGrid {
 
     getDisplayObject() {
         return this.displayObject;
+    }
+
+    bindEvents() {
+        $('#container').on('hexGridMove', this.pan.bind(this));
+    }
+
+    pan(event, x, y) {
+        // calculate amount moved and offset display object by that much
+        if (this.previousX && this.previousY) {
+            console.log(this.displayObject.x, this.displayObject.y);
+
+            let deltaX = x - this.previousX;
+            let deltaY = y - this.previousY;
+            this.displayObject.x += deltaX;
+            this.displayObject.y += deltaY;
+
+            console.log(deltaX, deltaY);
+            console.log(this.displayObject.x, this.displayObject.y);
+        }
+
+        this.previousX = x;
+        this.previousY = y;
     }
 
     update() {
