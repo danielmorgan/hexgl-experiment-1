@@ -28,12 +28,6 @@ export default class Game {
 
     bindEvents() {
         $(window).on('resize', this.calculateLayout.bind(this));
-        
-        this.$container.on('mousedown', () => {
-            this.$container.on('mousemove', e => {
-                this.$container.trigger('hexGridMove', [e.clientX, e.clientY]);
-            });
-        });
     }
 
     calculateLayout() {

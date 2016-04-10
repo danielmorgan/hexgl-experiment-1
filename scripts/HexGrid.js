@@ -10,16 +10,12 @@ import Layout from './Coordinates/Layout';
 
 class HexGrid {
     constructor() {
-        let screenCenter = new PIXI.Point(window.innerWidth / 2, window.innerHeight / 2);
-        this.layout = new Layout(LAYOUT_POINTY, { w: 25, h: 25 }, screenCenter);
-        this.displayObject = this.drawGrid();
+        this.layout = new Layout(LAYOUT_POINTY, { w: 25, h: 25 }, new PIXI.Point(0, 0));
+        this.drawGrid();
         this.bindEvents();
     }
 
     drawGrid() {
-        let width = this.layout.size.w * Math.sqrt(3) / 2;
-        let height = this.layout.size.h * 2;
-
         // mask
         let borderSize = 6;
         let padding = 20;
@@ -30,18 +26,17 @@ class HexGrid {
 
         // grid
         let hexGridContainer = new PIXI.Container();
-        let grid = new Grid(mask.getBounds(), this.layout.size);
+        let bounds = mask.getBounds();
+        let grid = new Grid(bounds, this.layout.size);
         for (let coord of grid.coords) {
             let point = coord.toPixel(this.layout);
             let hex = new HexagonGraphic(point, this.layout)
             hexGridContainer.addChild(hex);
         }
 
-        let container = new PIXI.Container();
-        container.addChild(hexGridContainer);
-        container.mask = mask;
-
-        return container;
+        this.displayObject = new PIXI.Container();
+        this.displayObject.addChild(hexGridContainer);
+        this.displayObject.mask = mask;
     }
 
     getDisplayObject() {
@@ -49,21 +44,19 @@ class HexGrid {
     }
 
     bindEvents() {
-        $('#container').on('hexGridMove', this.pan.bind(this));
+        $('#container').on('mousedown', () => this.panning = true);
+        $('#container').on('mouseup', () => this.panning = false);
+        $('#container').on('mousemove', e => {
+            this.pan(e.clientX, e.clientY)
+        });
     }
 
-    pan(event, x, y) {
-        // calculate amount moved and offset display object by that much
-        if (this.previousX && this.previousY) {
-            console.log(this.displayObject.x, this.displayObject.y);
-
+    pan(x, y) {
+        if (this.previousX && this.previousY && this.panning) {
             let deltaX = x - this.previousX;
             let deltaY = y - this.previousY;
             this.displayObject.x += deltaX;
             this.displayObject.y += deltaY;
-
-            console.log(deltaX, deltaY);
-            console.log(this.displayObject.x, this.displayObject.y);
         }
 
         this.previousX = x;
