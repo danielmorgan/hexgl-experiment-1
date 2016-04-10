@@ -28,6 +28,7 @@ class HexGrid {
         let hexGridContainer = new PIXI.Container();
         let bounds = mask.getBounds();
         let grid = new Grid(bounds, this.layout.size);
+        console.log(grid);
         for (let coord of grid.coords) {
             let point = coord.toPixel(this.layout);
             let hex = new HexagonGraphic(point, this.layout)
