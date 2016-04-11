@@ -16,11 +16,10 @@ class HexGrid {
 
     drawGrid() {
         // mask
-        let borderSize = 12;
+        let borderSize = 6;
         let padding = 20;
         let topLeftPadding = (borderSize + padding);
         let bottomRightPadding = topLeftPadding * 2;
-        console.log(bottomRightPadding);
         let mask = new PIXI.Graphics();
         mask.beginFill();
         mask.drawRect(
@@ -30,16 +29,14 @@ class HexGrid {
             game.$container.height() - bottomRightPadding
         );
         mask.endFill();
-        console.log(mask);
 
         // grid
         let hexGridContainer = new PIXI.Container();
         let bounds = mask.getBounds();
+        let hexSize = { w: 25, h: 25 }
         let layout = new Layout(LAYOUT_POINTY,
-            { w: 25, h: 25 },
-            new PIXI.Point(bounds.x, bounds.y));
-        console.log(bounds);
-
+            hexSize,
+            new PIXI.Point(bounds.x + hexSize.w, bounds.y + hexSize.h));
         let grid = new Grid(bounds, layout.size);
         console.log(grid);
         for (let coord of grid.rectangle()) {
