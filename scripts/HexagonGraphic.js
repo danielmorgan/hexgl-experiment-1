@@ -2,8 +2,9 @@
 
 import PIXI from 'pixi.js';
 
-export default class HexagonGraphic {
+export default class HexagonGraphic extends PIXI.DisplayObject {
     constructor(center, layout) {
+        super();
         this.center = center;
         this.layout = layout;
 

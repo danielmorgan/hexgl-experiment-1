@@ -2,6 +2,7 @@
 
 import PIXI from 'pixi.js';
 import $ from 'jquery';
+import _ from 'lodash';
 import HexagonGraphic from './HexagonGraphic';
 import Grid from './Coordinates/Grid';
 import Axial from './Coordinates/Axial';
@@ -10,18 +11,31 @@ import Layout from './Coordinates/Layout';
 
 class HexGrid {
     constructor() {
-        this.drawGrid();
+        this.drawHexGrid();
         this.bindEvents();
     }
 
-    drawGrid() {
+    bindEvents() {
+        game.$container.on('mousedown', () => this.panning = true);
+        game.$container.on('mouseup', () => {
+            this.panning = false
+            this.redrawHexGrid();
+        });
+        game.$container.on('mousemove', e => {
+            if (this.panning) {
+                this.pan(e.clientX, e.clientY);
+            }
+        });
+    }
+
+    drawHexGrid() {
         // mask
         let borderSize = 6;
         let padding = 20;
         let topLeftPadding = (borderSize + padding);
         let bottomRightPadding = topLeftPadding * 2;
         let mask = new PIXI.Graphics();
-        mask.beginFill();
+        mask.beginFill(0x00000, 0);
         mask.drawRect(
             topLeftPadding,
             topLeftPadding,
@@ -30,48 +44,78 @@ class HexGrid {
         );
         mask.endFill();
 
+        this.layout = new Layout(LAYOUT_POINTY, { w: 25, h: 25 }, new PIXI.Point(0, 0));
+
         // grid
-        let hexGridContainer = new PIXI.Container();
-        let bounds = mask.getBounds();
-        let hexSize = { w: 25, h: 25 }
-        let layout = new Layout(LAYOUT_POINTY,
-            hexSize,
-            new PIXI.Point(bounds.x + hexSize.w, bounds.y + hexSize.h));
-        let grid = new Grid(bounds, layout.size);
-        console.log(grid);
-        for (let coord of grid.rectangle()) {
-            let point = coord.toPixel(layout);
-            let hex = new HexagonGraphic(point, layout);
-            hexGridContainer.addChild(hex);
+        this.coordGrid = (new Grid(mask.getBounds(), this.layout.size)).rectangle();
+
+        // visual representation
+        this.hexGrid = new PIXI.Container();
+        this.displayObject = new PIXI.Container();
+        this.displayObject.addChild(this.hexGrid);
+        this.displayObject.mask = mask;
+
+        this.redrawHexGrid();
+    }
+
+    redrawHexGrid() {
+        console.log('redrawHexGrid', this.hexGrid.children.length);
+
+        let bounds = this.displayObject.mask.getBounds();
+        let offset = new PIXI.Point(this.displayObject.x, this.displayObject.y);
+
+        this.hexGrid.removeChildren();
+        if (this.hexGrid.cacheAsBitmap) {
+            this.hexGrid.cacheAsBitmap = null;
         }
 
-        this.displayObject = new PIXI.Container();
-        this.displayObject.addChild(hexGridContainer);
-        this.displayObject.mask = mask;
+        for (let coord of this.coordGrid) {
+            let point = coord.toPixel(this.layout);
+            if (this.inBounds(point, bounds, this.layout.size, offset)) {
+                let hex = new HexagonGraphic(point, this.layout);
+                let text = new PIXI.Text(coord.q + ', ' + coord.r, {font : '12px Arial', fill : 0x000000, align : 'center'});
+                text.x = point.x - 12;
+                text.y = point.y - 6;
+                this.hexGrid.addChild(hex);
+                this.hexGrid.addChild(text);
+                this.hexGrid.cacheAsBitmap = true;
+            }
+        }
     }
 
-    getDisplayObject() {
-        return this.displayObject;
-    }
+    inBounds(point, bounds, size, offset = new PIXI.Point(0, 0)) {
+        let x = point.x + offset.x;
+        let y = point.y + offset.y;
+        bounds.xMin = bounds.x - size.w;
+        bounds.yMin = bounds.y - size.h;
+        bounds.xMax = bounds.x + bounds.width + size.w;
+        bounds.yMax = bounds.y + bounds.height + size.h;
 
-    bindEvents() {
-        game.$container.on('mousedown', () => this.panning = true);
-        game.$container.on('mouseup', () => this.panning = false);
-        game.$container.on('mousemove', e => {
-            this.pan(e.clientX, e.clientY)
-        });
+        if (x > bounds.xMin &&
+            x < bounds.xMax &&
+            y > bounds.yMin &&
+            y < bounds.yMax) {
+            return true;
+        }
+
+        return false;
     }
 
     pan(x, y) {
-        if (this.previousX && this.previousY && this.panning) {
+        if (this.previousX && this.previousY) {
             let deltaX = x - this.previousX;
             let deltaY = y - this.previousY;
+
             this.displayObject.x += deltaX;
             this.displayObject.y += deltaY;
         }
 
         this.previousX = x;
         this.previousY = y;
+    }
+
+    getDisplayObject() {
+        return this.displayObject;
     }
 
     update() {

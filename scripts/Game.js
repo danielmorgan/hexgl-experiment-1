@@ -3,6 +3,7 @@
 import PIXI from 'pixi.js';
 import $ from 'jquery';
 import _ from 'lodash';
+import Stats from 'stats.js';
 
 let instance = null;
 
@@ -19,6 +20,9 @@ export default class Game {
             backgroundColor: 0xd6cca9
         });
         this.$container.append(this.renderer.view);
+
+        this.stats = new Stats();
+        this.$container.append(this.stats.dom);
 
         this.bindEvents();
         this.update();
@@ -40,6 +44,8 @@ export default class Game {
     }
 
     update() {
+        this.stats.begin();
+
         this.entities.forEach(entity => {
             if (typeof entity.update == 'function') {
                 entity.update();
@@ -47,6 +53,8 @@ export default class Game {
         });
 
         this.renderer.render(this.stage);
+
+        this.stats.end();
 
         requestAnimationFrame(this.update.bind(this));
     }
