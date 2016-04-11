@@ -13,16 +13,15 @@ export default class Grid {
      
 
         // temporarily make grid smaller
-        this.gridWidth /= 2;
-        this.gridHeight /= 2;
-
-        this.coords = this.rectangle();
+        let ratio = 0.5;
+        this.gridWidth *= ratio;
+        this.gridHeight *= ratio;
     }
 
     parallelogram() {
         let coords = [];
         
-        for (let q = 0; q <= this.gridWith; q++) {
+        for (let q = 0; q <= this.gridWidth; q++) {
             for (let r = 0; r <= this.gridHeight; r++) {
                 coords.push(new Axial(q, r));
             }
@@ -36,9 +35,7 @@ export default class Grid {
 
         for (let r = 0; r < this.gridHeight; r++) {
             let rOffset = Math.floor(r / 2);
-            console.log('r', r, 'rOffset', rOffset);
             for (let q = -rOffset; q < this.gridWidth - rOffset; q++) {
-                console.log('q', q);
                 coords.push(new Axial(q, r));
             }
         }

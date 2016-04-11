@@ -10,28 +10,41 @@ import Layout from './Coordinates/Layout';
 
 class HexGrid {
     constructor() {
-        this.layout = new Layout(LAYOUT_POINTY, { w: 25, h: 25 }, new PIXI.Point(0, 0));
         this.drawGrid();
         this.bindEvents();
     }
 
     drawGrid() {
         // mask
-        let borderSize = 6;
+        let borderSize = 12;
         let padding = 20;
+        let topLeftPadding = (borderSize + padding);
+        let bottomRightPadding = topLeftPadding * 2;
+        console.log(bottomRightPadding);
         let mask = new PIXI.Graphics();
         mask.beginFill();
-        mask.drawRect(padding + borderSize, padding + borderSize, window.innerWidth - (padding*2) - borderSize, window.innerHeight - (padding*2) - borderSize);
+        mask.drawRect(
+            topLeftPadding,
+            topLeftPadding,
+            game.$container.width() - bottomRightPadding,
+            game.$container.height() - bottomRightPadding
+        );
         mask.endFill();
+        console.log(mask);
 
         // grid
         let hexGridContainer = new PIXI.Container();
         let bounds = mask.getBounds();
-        let grid = new Grid(bounds, this.layout.size);
+        let layout = new Layout(LAYOUT_POINTY,
+            { w: 25, h: 25 },
+            new PIXI.Point(bounds.x, bounds.y));
+        console.log(bounds);
+
+        let grid = new Grid(bounds, layout.size);
         console.log(grid);
-        for (let coord of grid.coords) {
-            let point = coord.toPixel(this.layout);
-            let hex = new HexagonGraphic(point, this.layout)
+        for (let coord of grid.rectangle()) {
+            let point = coord.toPixel(layout);
+            let hex = new HexagonGraphic(point, layout);
             hexGridContainer.addChild(hex);
         }
 
@@ -45,9 +58,9 @@ class HexGrid {
     }
 
     bindEvents() {
-        $('#container').on('mousedown', () => this.panning = true);
-        $('#container').on('mouseup', () => this.panning = false);
-        $('#container').on('mousemove', e => {
+        game.$container.on('mousedown', () => this.panning = true);
+        game.$container.on('mouseup', () => this.panning = false);
+        game.$container.on('mousemove', e => {
             this.pan(e.clientX, e.clientY)
         });
     }
