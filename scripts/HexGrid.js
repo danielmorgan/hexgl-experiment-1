@@ -19,12 +19,11 @@ class HexGrid {
         game.$container.on('mousedown', () => this.panning = true);
         game.$container.on('mouseup', () => {
             this.panning = false
+            this.previousX = this.previousY = 0;
             this.redrawHexGrid();
         });
         game.$container.on('mousemove', e => {
-            if (this.panning) {
-                this.pan(e.clientX, e.clientY);
-            }
+            if (this.panning) this.pan(e.clientX, e.clientY);
         });
     }
 
@@ -59,8 +58,6 @@ class HexGrid {
     }
 
     redrawHexGrid() {
-        console.log('redrawHexGrid', this.hexGrid.children.length);
-
         let bounds = this.displayObject.mask.getBounds();
         let offset = new PIXI.Point(this.displayObject.x, this.displayObject.y);
 
@@ -72,8 +69,9 @@ class HexGrid {
         for (let coord of this.coordGrid) {
             let point = coord.toPixel(this.layout);
             if (this.inBounds(point, bounds, this.layout.size, offset)) {
-                let hex = new HexagonGraphic(point, this.layout);
-                let text = new PIXI.Text(coord.q + ', ' + coord.r, {font : '12px Arial', fill : 0x000000, align : 'center'});
+                let color = '0x' + coord.q*6 + '00' + coord.r*10;
+                let hex = new HexagonGraphic(point, this.layout, color);
+                let text = new PIXI.Text(coord.q + ', ' + coord.r, {font : '12px Arial', fill : 0xffffff, align : 'center'});
                 text.x = point.x - 12;
                 text.y = point.y - 6;
                 this.hexGrid.addChild(hex);
@@ -105,13 +103,12 @@ class HexGrid {
         if (this.previousX && this.previousY) {
             let deltaX = x - this.previousX;
             let deltaY = y - this.previousY;
-
             this.displayObject.x += deltaX;
             this.displayObject.y += deltaY;
-        }
+       }
 
         this.previousX = x;
-        this.previousY = y;
+        this.previousY = y;;
     }
 
     getDisplayObject() {

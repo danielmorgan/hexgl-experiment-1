@@ -3,14 +3,14 @@
 import PIXI from 'pixi.js';
 
 export default class HexagonGraphic extends PIXI.DisplayObject {
-    constructor(center, layout) {
+    constructor(center, layout, color) {
         super();
         this.center = center;
         this.layout = layout;
 
         let hexagon = new PIXI.Graphics();
 
-        hexagon.beginFill(0xa69c79, 1);
+        hexagon.beginFill(color, 1);
         hexagon.lineStyle(2, 0xe6dcc9, 1);
         hexagon.drawPolygon(this.hexCoords());
         hexagon.endFill();
